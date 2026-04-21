@@ -256,7 +256,7 @@ The security of a cryptography system is always tied to some _hard_ problem, e.g
 
 Important algebraic structures:
 - large prime order finite fields $F_p$ ~ ($p >= 2^1024$);
-- multiplicative rings modulo large $n = p q$ ~~ $frac(ZZ, p q ZZ, style: "horizontal")$ ~ ($p, q >= 2^(1024)$ and are primes).
+- multiplicative rings modulo large $n = p q$ ~~ $frac(ZZ, p q ZZ, style: "horizontal")$ ~ ($p, q >= 2^1024$ and are primes).
 
 Finite fields' value in encryption comes from the discrete log problem; multiplicative rings' value come from the factoring problem. \
 The discrete log is also hard in composite multiplicative rings, just that finite fields are more computationally suited (efficient) for discrete log setups.
