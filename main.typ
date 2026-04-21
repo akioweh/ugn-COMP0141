@@ -289,7 +289,7 @@ AES...
 
 === Key Exchange
 
-The Diffie-Hellman (DH) key exchange protocol allows two people to create a shared secret key over an insure communication channel without ever sending the key itself.
+The Diffie-Hellman (DH) key exchange protocol allows two people to create a shared secret key over an insecure communication channel without ever sending the key itself.
 
 + *Public parameters* \
   Alice and Bob agree on prime $p$ and base generator $g$.
