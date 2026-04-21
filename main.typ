@@ -337,7 +337,7 @@ A problem of symmetric encryption arises in many-to-many communication setups: t
 - choose 2 large primes $p$ and $q$
 - let $N = p q$
 - choose Public Key $e$ s.t. $gcd(e, phi(N)) = 1$ ($phi(N) = (p - 1)(q - 1)$)
-- compute Private Key $d$ s.t. $e times d equiv 1 thick (mod N)$ (the inverse of $e$)
+- compute Private Key $d$ s.t. $e times d equiv 1 thick (mod phi(N))$ (the inverse of $e$)
 
 $(N, e)$ is the public key; $(N, d)$ is the private key.
 
