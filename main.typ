@@ -1095,11 +1095,11 @@ $X$ can delete $O$ only if $(X, O, #quote[owner])$.
 $X$ creating $S$ generates $(X, S, #quote[owner])$ AND $(X, S, #quote[control])$. \
 $X$ can delete $S$ only if $(X, S, #quote[owner])$.
 
-$S$ can grant $R$ or $R^*$ on $O$ to $S$ only if $(S, O, #quote[owner])$. \
-$S$ can transfer $R$ or $R^*$ on $O$ to $S$ only if $(X, O, R^*)$.
+$X$ can grant $R$ or $R^*$ on $O$ to $S$ only if $(X, O, #quote[owner])$. \
+$X$ can transfer $R$ or $R^*$ on $O$ to $S$ only if $(X, O, R^*)$.
 
 $X$ can revoke $R$ on $O$ from $S$ only if $(X, O, #quote[owner])$ OR $(X, S, #quote[control])$. \
-$X$ can check rights on $O$ for $S$ only if $(X, O, #quote[owner])$ OR $(X, S, #quote[control])$.
+$X$ can read rights on $O$ for $S$ only if $(X, O, #quote[owner])$ OR $(X, S, #quote[control])$.
 
 Note that the "subject" (item \#2) of a table entry can be _either_ a subject or an object.
 
