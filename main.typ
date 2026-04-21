@@ -620,7 +620,7 @@ memcached used to use UDP by default, making the spoofing trivial (does not requ
 
 - Root DNS Servers (2007): Botnets attacked the 13 root internet servers.
 
-- Slammer Worm (2003): Exploited MS SQL Server via a single 380-byte UDP packet.
+- Slammer Worm (2003): Exploited MS SQL Server via a single 376-byte UDP packet.
   Saturated internet links globally in under 10 minutes.
 
 - Mirai (2016): Botnet comprised of millions of poorly secured IoT devices (cameras, fridges) running default credentials.
@@ -1055,6 +1055,8 @@ All processes are spawned by a parent (except `init`); on process creation:
 - RUID is inherited from parent's RUID
 - EUID is inherited from parent's EUID, or set to file's owner if `setuid` bit is set (see below)
 - SUID is set to the same as EUID
+
+NOTE that the above is `exec*` syscalls; `fork` copies UIDs unconditionally.
 
 Changing UIDs:
 - Root:
