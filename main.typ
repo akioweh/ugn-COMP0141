@@ -1082,10 +1082,18 @@ Cons:
 == Access Control Policy Types
 
 Mandatory Access Control
+- Central authority determines access
+- Even if you "own" a file, you cannot grant access to someone else unless the system policy allows it, the discretion is taken away from the user
+- Very secure at the cost of being rigid and difficult to manage/configure
 
 Discretionary Access Control
+- Access is at the discretion of the owner, if you create it, you own it, and decide who else can touch it
+- \*nix style
+- Prone to user error as the system won't enforce anything (can make sensitive file world-readable)
 
 Role-Based Access Control
+- Permissions are tied to roles ("Manager", "HR", or "SysAdmin" rather than User IDs)
+- May implement MAC or DAC
 
 == Graham-Denning Model
 
