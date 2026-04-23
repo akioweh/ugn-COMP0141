@@ -189,7 +189,7 @@ Some basics regarding TCP/IP + DNS alongside packets and routing.
 
 (not sure why this is in this section)
 
-$x | y$ ~ means  x is a factor of y (think: x "goes into" y).
+$x | y$ ~ means x is a factor of y (think: x "goes into" y).
 
 $z = a x + y quad <==> quad z equiv y thick (mod x)$ \
 $z equiv y thick (mod x) quad <==> quad x | (z - y)$
@@ -239,7 +239,7 @@ If $gcd(a, n) = 1$, then $a x + n y = 1$ by Bezout's identity, and so $a x equiv
 The proof in the other direction is literally the same thing reversed.
 
 Multiplicative inverses are unique.
-Evidently, the extended euclidean algorithm computes them efficiently.
+Evidently, the extended Euclidean algorithm computes them efficiently.
 
 A structure that is a group under both addition and multiplication is a field...
 
@@ -276,7 +276,7 @@ The discrete log is also hard in composite multiplicative rings, just that finit
 / Monoalphabetic substitution: arbitrary letter-substitution. Key is a $n mapsto n$ table.
 / Vigenere Cipher: letter-substitution where we rotate through a sequence of independent Caesar ciphers. Key length is variable (of base-$n$ values).
 / Polyalphabetic Substitution: idk (e.g. enigma?)
-/ Running Key Cipher: Vigenere cipher but the key comes from a practically infinite source like a book.
+/ Running Key Cipher: Vigenere cipher, but the key comes from a practically infinite source like a book.
 / One-time Pad: Requires key at least as long as plaintext. Each letter in plaintext is combined with the corresponding key letter via modular addition. Unbreakable if key is truly random and used only once.
 
 
@@ -542,7 +542,7 @@ Primary threats to availability
 - Denial of Service attacks: intentional attacks, usually externally, without malware within the system
 
 Many fundamental internet protocols (TCP/IP, BGP) were built on trust (initially used only in institutional research).
-They lack mechanisms to prevent / mitigate many forms of denial of service attacks.
+They lack mechanisms to prevent / mitigate many forms of denial-of-service attacks.
 Core redesigns are necessary, but impossible to deploy globally.
 
 == Denial of Service (DoS) Attacks
@@ -778,7 +778,7 @@ With a 32-bit salt, there are $~4 times 10^9$ possible salt values requiring as 
 Salting defeats universal precomputation, significantly nerfing rainbow tables.
 Dictionary attacks on a per-user basis still works.
 
-A small (\~10) GPU cluster can perform  $~10^11$ (SHA-512) hashes per second, making it possible to crack hashes (by exhausting dictionaries) on the hourly timescale.
+A small (\~10) GPU cluster can perform $~10^11$ (SHA-512) hashes per second, making it possible to crack hashes (by exhausting dictionaries) on the hourly timescale.
 (`bcrypt` is significantly slower, at $~10^6$/s.) \
 Regardless of a slow hash function or not, by NOT choosing a password that could end up in a dictionary (e.g. pseudo-random strings), you get cracking-resistance for free.
 
@@ -799,7 +799,7 @@ This can also be extended to happen both way for bidirectional auth.
 
 === One-Time Passwords (OTP)
 
-prevents replay attacks by definition
+...prevents replay attacks by definition.
 
 *Hash-chain OTP (Lamport scheme)*:
 
@@ -832,7 +832,7 @@ Requires clock synchronization and is not strictly "on-time" use by definition.
 
 *Two-Phase Process*:
 
-+ Enrolment
++ Enrollment
   + capture multiple raw samples
   + extract digital feature template
   + store template
@@ -952,7 +952,7 @@ E.g.:
 2. _Reference monitor_ looks in the matrix
 3. Grant or deny access accordingly
 
-Problem: access control matrices are not very space-efficient, requiring \#user $times$ \#files entires.
+Problem: access control matrices are not very space-efficient, requiring \#user $times$ \#files entries.
 
 == Access Control List
 
@@ -1003,7 +1003,7 @@ For *directories*, "read", "write", and "execute" are not semantically intuitive
 
 / Sticky Bit: The 10th UNIX permission value.
   When set on a directory, only the owner can rename or delete contents, even if others have write permission on the directory.
-  This is useful for shared directories like `/tmp` where all users need `rwx` but shouldn't be able to delete each others' files.
+  This is useful for shared directories like `/tmp` where all users need `rwx` but shouldn't be able to delete each other's files.
 
 
 *Root User*:
@@ -1022,7 +1022,7 @@ For *directories*, "read", "write", and "execute" are not semantically intuitive
 - Separation of responsibilities: different roles get different permissions.
 - Complete mediation: every file access goes through the reference monitor; no caching of permissions that could become stale.
 - Fail-safe default: no permissions should mean deny by default
-- Defence in depth: use other mechanisms in addition to e.g. UNIX system permissions
+- Defense in depth: use other mechanisms in addition to e.g. UNIX system permissions
 - Open design: reference monitor source should be auditable
 - Psychological acceptability: Intuitive system
 - Economy of mechanisms: Keep the TCB (below) small
@@ -1071,7 +1071,7 @@ Changing UIDs:
 === Elevating Privileges (`setuid` bit)
 
 Unprivileged users often need _elevation_ for specific operations (e.g. `passwd` modifies `/etc/shadow`, which only root can r/w). \
-The setuid permission bit (the 12th bit) on an executable file means when when the file is executed, the process's EUID (and SUID) is set to the file's owner rather than inheriting the parent's (default).
+The setuid permission bit (the 12th bit) on an executable file means when the file is executed, the process's EUID (and SUID) is set to the file's owner rather than inheriting the parent's (default).
 
 (The setgid bit is the 11th bit, and works similarly but for groups instead of users.)
 
@@ -1131,7 +1131,7 @@ Correctness requirements:
 Logistical challenges:
 - Information asymmetry (between different employees): e.g. security admins not knowing someone was fired
   - Insider attacks often result from the failure to revoke access of former employees
-- Efficient updates: people's roles change, and access needs to be kept up to date
+- Efficient updates: people's roles change, and access needs to be kept up-to-date
 
 == Modern Models
 
