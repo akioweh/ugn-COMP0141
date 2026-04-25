@@ -636,7 +636,13 @@ Proxies
 - Content-Delivery Networks (CDNs) & Scrubbing Proxies: (e.g. Cloudflare, Akamai) distribute load globally.
   Proxies sit in front of the web server, handle the handshakes, and only forward fully established TCP connections to absorb SYN floods.
   CDNs remove the vast majority of the load from the origin server to absorb even application-layer attacks.
-- SYN Cookies
+- SYN Cookies. 
+  When the server receives a SYN packet, instead of saving the connection details in memory, it takes the client's IP, port, and a secret "timestamp/nonce" and runs it through a hash function. 
+  The server then sends a SYN-ACK back with the hash as the Initial Sequence Number (ISN) field of the TCP header. 
+  If the client is legitimate, it will respond with an ACK packet. 
+  The client's "Acknowledgement Number" is always the server's Sequence Number + 1.
+  The server subtracts 1 from the acknowledgement number, re-calculates the hash using the packet's info and compares.
+  If they match, the connection is legitimate and only then will the server allocate memory for it.
 
 === Rate Limiting & Filtering
 
@@ -772,7 +778,7 @@ Salted hash
 / Rainbow table: dictionary attack but fully pre-computed. Usually uses a much larger dictionary for higher hit-rate.
 
 Rainbow table with dictionary size $d$: hash $d$ strings... profit. \
-With $x$-bit salt: now need to hash $d times 2^x$ string + salt combos... sad.
+With $x$-bit salt: now need to hash $d times 2^x$ string = salt combos... sad.
 
 With a 32-bit salt, there are $~4 times 10^9$ possible salt values requiring as many rainbow tables. \
 Salting defeats universal precomputation, significantly nerfing rainbow tables.
@@ -809,7 +815,7 @@ Setup (server-side):
 + server stores value and stores counter $j = 0$
 
 Authentication ($i$-th login)
-+ Alice sends her name, $i$, and $H^(t-i) (w)$
++ user sends their name, $i$, and $H^(t-i) (w)$
 + server checks that $i = j + 1$ AND $H("submitted value") = "stored value"$
 + update stored value to submitted value and increment $j$
 
@@ -1087,10 +1093,18 @@ Cons:
 == Access Control Policy Types
 
 Mandatory Access Control
+- Central authority determines access
+- Even if you "own" a file, you cannot grant access to someone else unless the system policy allows it, the discretion is taken away from the user
+- Very secure at the cost of being rigid and difficult to manage/configure
 
 Discretionary Access Control
+- Access is at the discretion of the owner, if you create it, you own it, and decide who else can touch it
+- \*nix style
+- Prone to user error as the system won't enforce anything (can make sensitive file world-readable)
 
 Role-Based Access Control
+- Permissions are tied to roles ("Manager", "HR", or "SysAdmin" rather than User IDs)
+- May implement MAC or DAC
 
 == Graham-Denning Model
 
@@ -1098,7 +1112,7 @@ Role-Based Access Control
 
 Below, $X$'s (and $S$'s) are subjects, $O$'s are objects, and $R$'s are access rights. \
 A right $R$ can additionally be marked as "transferable", denoted $R^*$. \
-"_A_ only if $(...)$" means _A_ can only be performed if the right represented by the tuple in the reference monitor's database (access control matrix). \
+"_A_ only if $(...)$" means _A_ can only be performed if the right represented by the tuple is in the reference monitor's database (access control matrix). \
 Similarly, "_A_ generates $(...)$" means _A_ creates the corresponding entry in the access control matrix. \
 $(A, B, R)$ means subject $A$ has right $R$ ("owner" or "control") on subject/object $B$.
 
