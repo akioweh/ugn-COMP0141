@@ -1,4 +1,4 @@
-name: Release 
+name: Release
 on:
   push:
     branches:
@@ -19,9 +19,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view latest >/dev/null 2>&1; then
-            gh release edit latest --title "ugn-COMP0141 - $GITHUB_SHA" --target "$GITHUB_SHA"
-            gh release upload latest main.pdf --clobber
-          else
-            gh release create latest main.pdf --title "ugn-COMP0141 - $GITHUB_SHA" --notes "Automated PDF build from $GITHUB_SHA" --target "$GITHUB_SHA" --latest
-          fi
+          TIMESTAMP_TAG=$(date +'%Y%m%d-%H%M%S')
+          TIMESTAMP_TITLE=$(date +'%Y-%m-%d %H:%M:%S')
+          REPO_NAME=${GITHUB_REPOSITORY#*/}
+
+          gh release create "build-$TIMESTAMP_TAG" main.pdf \
+            --title "$REPO_NAME - $TIMESTAMP_TITLE" \
+            --notes "Automated PDF build from $GITHUB_SHA" \
+            --target "$GITHUB_SHA" \
+            --latest

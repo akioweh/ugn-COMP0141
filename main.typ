@@ -96,7 +96,7 @@ A _strategic_ adversary optimally uses resources.
 
 / Spoofing: impersonation (Authenticity)
 / Tampering: modification of data (Integrity)
-/ Repudiation: claiming (whether honestly or not) a lack of responsibility (Non-repudiability)
+/ Repudiation: claiming (whether honestly or not) a lack of responsibility (Non-repudiation)
 / Information disclosure: unauthorized access (Confidentiality)
 / Denial of service: exhausting / overwhelming a server's ability to provide service (Availability)
 / Elevation of privilege: failure of Authorization control
@@ -149,7 +149,7 @@ Common problems and ways to improve:
 
 == Design Principles
 
-Generate considerations when designing secure systems.
+General considerations when designing secure systems.
 
 The following 8 principles spell out ELLF COPS.
 
@@ -175,7 +175,7 @@ Additional principles:
 
 / Design for Updating: Vulnerabilities will always be discovered, so make your system updatable.
 
-/ Prudent Paranoia: Don't underestimate the effort adversaries will go to. "Just because you'\re paranoid doesn't mean they aren't after you."
+/ Prudent Paranoia: Don't underestimate the effort adversaries will go to. "Just because you're paranoid doesn't mean they aren't after you."
 
 / Privacy Promotion:
 
@@ -189,7 +189,7 @@ Some basics regarding TCP/IP + DNS alongside packets and routing.
 
 (not sure why this is in this section)
 
-$x | y$ ~ means  x is a factor of y (think: x "goes into" y).
+$x | y$ ~ means x is a factor of y (think: x "goes into" y).
 
 $z = a x + y quad <==> quad z equiv y thick (mod x)$ \
 $z equiv y thick (mod x) quad <==> quad x | (z - y)$
@@ -239,7 +239,7 @@ If $gcd(a, n) = 1$, then $a x + n y = 1$ by Bezout's identity, and so $a x equiv
 The proof in the other direction is literally the same thing reversed.
 
 Multiplicative inverses are unique.
-Evidently, the extended euclidean algorithm computes them efficiently.
+Evidently, the extended Euclidean algorithm computes them efficiently.
 
 A structure that is a group under both addition and multiplication is a field...
 
@@ -256,7 +256,7 @@ The security of a cryptography system is always tied to some _hard_ problem, e.g
 
 Important algebraic structures:
 - large prime order finite fields $F_p$ ~ ($p >= 2^1024$);
-- multiplicative rings modulo large $n = p q$ ~~ $frac(ZZ, p q ZZ, style: "horizontal")$ ~ ($p, q >= 2^(1024)$ and are primes).
+- multiplicative rings modulo large $n = p q$ ~~ $frac(ZZ, p q ZZ, style: "horizontal")$ ~ ($p, q >= 2^1024$ and are primes).
 
 Finite fields' value in encryption comes from the discrete log problem; multiplicative rings' value come from the factoring problem. \
 The discrete log is also hard in composite multiplicative rings, just that finite fields are more computationally suited (efficient) for discrete log setups.
@@ -276,7 +276,7 @@ The discrete log is also hard in composite multiplicative rings, just that finit
 / Monoalphabetic substitution: arbitrary letter-substitution. Key is a $n mapsto n$ table.
 / Vigenere Cipher: letter-substitution where we rotate through a sequence of independent Caesar ciphers. Key length is variable (of base-$n$ values).
 / Polyalphabetic Substitution: idk (e.g. enigma?)
-/ Running Key Cipher: Vigenere cipher but the key comes from a practically infinite source like a book.
+/ Running Key Cipher: Vigenere cipher, but the key comes from a practically infinite source like a book.
 / One-time Pad: Requires key at least as long as plaintext. Each letter in plaintext is combined with the corresponding key letter via modular addition. Unbreakable if key is truly random and used only once.
 
 
@@ -328,7 +328,7 @@ A problem of symmetric encryption arises in many-to-many communication setups: t
 
 / Chosen Ciphertext Attack: (CCA) Adversaries that have access to a decryption oracle.
 
-/ Indistinguisability from CPA: (IND-CPA security) A security property where CPAs do not allow an adversary to distinguish between the ciphertexts of one chosen plaintext from another.
+/ Indistinguishability from CPA: (IND-CPA security) A security property where CPAs do not allow an adversary to distinguish between the ciphertexts of one chosen plaintext from another.
 
 / Indistinguishability from CCA: (IND-CCA security) A security property where CCAs do not allow an adversary to distinguish between the ciphertexts of one chosen plaintext from another. This is strictly stronger than IND-CPA.
 
@@ -347,7 +347,7 @@ $op("Dec")(C) = C^d mod N$
 
 === random details
 
-One-way functions' existence depend on N $!=$ NP, which is _unproved_.
+One-way functions' existence depend on P $!=$ NP, which is _unproved_.
 Even many symmetric ciphers that do not depend on one-way functions, like AES, are also _unproved_ regarding their security.
 In practice, the agreement of an algorithm's security is purely social (based on the lack of vulnerabilities found after "significant" scrutiny)
 
@@ -375,6 +375,11 @@ $op("Signature")(M) = M^d mod N$ \
 $op("Verify")(M, sigma): "check that" sigma^e equiv M thick mod N$
 
 / Existential Unforgeability under Chosen Message Attack: (EUF-CMA security) Where a system is immune to CMA; one will not be able to forge a signature for any message, even after seeing signatures for messages of their choice.
+
+NOTE: "textbook" RSA (what we have here) signatures are _not_ EUF-CMA.
+Forgery without oracle: pick $sigma$, set $M = sigma^e mod N$ and the $(M, sigma)$ pair is valid (although no control over $M$'s content).
+Forgery with oracle: RSA is multiplicatively homomorphic, so $sigma_1 sigma_2$ signs $M_1 M_2$ for any two pairs of message-signatures.
+Real schemes sign $"pad"("hash"(M))$, not raw $M$.
 
 == Message Authentication Codes
 
@@ -422,7 +427,7 @@ To communicate with a given domain, you need its public key. X.509 is important 
 == Thinking Socio-Technically
 
 To build truly robust security systems, one must avoid viewing technical and social aspects in isolation.
-A _socio-technical_ approach combimes
+A _socio-technical_ approach combines
 - technical elements: authentication, encryption, identity management systems, etc.
 - social elements: people, workplace culture, usage context, user limitations...
 
@@ -463,7 +468,7 @@ A system that lacks usability is fundamentally insecure as users will misuse or 
 
 / The 5Es of Usability: (from Whitney Quesenbery) Effectiveness, Efficiency, Engagement, Error Tolerance (allowing users to recover from mistakes), and Ease of Learning.
 
-NOTE that the slides incorrectly attributes these to the Nielsen Normal Group...
+NOTE that the slides incorrectly attributes these to the Nielsen Norman Group...
 
 / Affordances & Signifiers: Systems should use familiar design patterns (e.g. a door with a pull handle naturally affords pulling)
 
@@ -502,7 +507,7 @@ they should provide simple actionable steps.
 
 / Fogg Behavior Model: Users need Motivation, Ability (system usability), and a Prompt to change behavior.
 
-/ MINDSPACE Framework: Fractors influencing behavior change include Messenger, Incentives, Norms, Defaults, Salience, Priming, Affect, Commitments, and Ego.
+/ MINDSPACE Framework: Factors influencing behavior change include Messenger, Incentives, Norms, Defaults, Salience, Priming, Affect, Commitments, and Ego.
 
 *Simulated phishing* attacks can train staff to spot malicious indicators and may identify organizational vulnerabilities.
 However, adversaries continually adapt, requiring frequent training or obsolescence.
@@ -537,14 +542,14 @@ Primary threats to availability
 - Denial of Service attacks: intentional attacks, usually externally, without malware within the system
 
 Many fundamental internet protocols (TCP/IP, BGP) were built on trust (initially used only in institutional research).
-They lack mechanisms to prevent / mitigate many forms of denial of service attacks.
+They lack mechanisms to prevent / mitigate many forms of denial-of-service attacks.
 Core redesigns are necessary, but impossible to deploy globally.
 
 == Denial of Service (DoS) Attacks
 
 / Denial of Service Attack: Preventing _authorized_ access to a system or resource, usually by exhaustion achieved via techniques like _amplification_.
 
-/ Resource Exhaustion: (aka. Flooding) A mechanism to execute DoS: intentionally consuing a finite resource until none is left for legitimate users. \
+/ Resource Exhaustion: (aka. Flooding) A mechanism to execute DoS: intentionally consuming a finite resource until none is left for legitimate users. \
   *Volumetric*: saturating (network) link bandwidth (e.g. UDP floods). \
   *Protocol*: saturating limits in software limits (e.g. TCP connection tables, using SYN floods). \
   *Application*: exhausting physical compute resources (e.g. RAM, database connections).
@@ -566,7 +571,7 @@ As should be evident, some DoS vectors are created by security mechanisms themse
 
 ==== Link Layer
 
-802.11b Wi-Fi (ethernet / physical links are relatively more secure)
+802.11b Wi-Fi (Ethernet / physical links are relatively more secure)
 
 - Jamming: simple continuous transmission on the 2.4GHz freq (with enough power to drown out others)
 - Network Allocation Vector (NAV) Bug: setting the 15-bit channel-reservation field to its max value prevents other nodes from transmitting
@@ -615,7 +620,7 @@ memcached used to use UDP by default, making the spoofing trivial (does not requ
 
 - Root DNS Servers (2007): Botnets attacked the 13 root internet servers.
 
-- Slammer Worm (2003): Exploited MS SQL Server via a single 380-byte UDP packet.
+- Slammer Worm (2003): Exploited MS SQL Server via a single 376-byte UDP packet.
   Saturated internet links globally in under 10 minutes.
 
 - Mirai (2016): Botnet comprised of millions of poorly secured IoT devices (cameras, fridges) running default credentials.
@@ -624,7 +629,7 @@ memcached used to use UDP by default, making the spoofing trivial (does not requ
 
 == DoS Mitigation Strategies
 
-=== Architectural Defuses
+=== Architectural Defenses
 
 Proxies
 
@@ -670,7 +675,7 @@ Botnets are used for _Distributed_ DoS (DDos), spamming, email harvesting, keylo
 === Takedown Strategies
 
 - Attack C&C Infrastructure: seize domains or take down IRCs
-- De-peering: disconnecting hosting services that "don't care" about malicious services fromo the wider internet.
+- De-peering: disconnecting hosting services that "don't care" about malicious services from the wider internet.
 - Honeypots: deploying deliberately vulnerable bait targets to get infected; researchers can then study / reverse-engineer malware.
 
 == Malware
@@ -745,7 +750,9 @@ Three general factors:
 A good password system must simultaneously satisfy contradictory requirements:
 - easy to _memorize_, but hard to _guess_
 - easy to _use_, but hard to be _stolen_
-- easy to store _securely_, but also _retrievable_
+- easy to store _securely_, but also _retrievable_\*
+
+\*Whether retrievability is desired is debatable :p
 
 === Password Storage
 
@@ -777,9 +784,9 @@ With a 32-bit salt, there are $~4 times 10^9$ possible salt values requiring as 
 Salting defeats universal precomputation, significantly nerfing rainbow tables.
 Dictionary attacks on a per-user basis still works.
 
-A small (\~10) GPU cluster can perform  $~10^11$ (SHA-512) hashes per second, making it possible to crack hashes (by exhausting dictionaries) on the hourly timescale.
+A small (\~10) GPU cluster can perform $~10^11$ (SHA-512) hashes per second, making it possible to crack hashes (by exhausting dictionaries) on the hourly timescale.
 (`bcrypt` is significantly slower, at $~10^6$/s.) \
-Regardless of a slow hash function or not, by NOT choosing a password that could end up in a dictionary (e.g. psuedo-random strings), you get cracking-resistance for free.
+Regardless of a slow hash function or not, by NOT choosing a password that could end up in a dictionary (e.g. pseudo-random strings), you get cracking-resistance for free.
 
 == What you have -- Cryptographic Tokens
 
@@ -798,7 +805,7 @@ This can also be extended to happen both way for bidirectional auth.
 
 === One-Time Passwords (OTP)
 
-prevents replay attacks by definition
+...prevents replay attacks by definition.
 
 *Hash-chain OTP (Lamport scheme)*:
 
@@ -831,7 +838,7 @@ Requires clock synchronization and is not strictly "on-time" use by definition.
 
 *Two-Phase Process*:
 
-+ Enrolment
++ Enrollment
   + capture multiple raw samples
   + extract digital feature template
   + store template
@@ -951,7 +958,7 @@ E.g.:
 2. _Reference monitor_ looks in the matrix
 3. Grant or deny access accordingly
 
-Problem: access control matrices are not very space-efficient, requiring \#user $times$ \#files entires.
+Problem: access control matrices are not very space-efficient, requiring \#user $times$ \#files entries.
 
 == Access Control List
 
@@ -1002,7 +1009,7 @@ For *directories*, "read", "write", and "execute" are not semantically intuitive
 
 / Sticky Bit: The 10th UNIX permission value.
   When set on a directory, only the owner can rename or delete contents, even if others have write permission on the directory.
-  This is useful for shared directories like `/tmp` where all users need `rwx` but shouldn't be able to delete each others' files.
+  This is useful for shared directories like `/tmp` where all users need `rwx` but shouldn't be able to delete each other's files.
 
 
 *Root User*:
@@ -1021,7 +1028,7 @@ For *directories*, "read", "write", and "execute" are not semantically intuitive
 - Separation of responsibilities: different roles get different permissions.
 - Complete mediation: every file access goes through the reference monitor; no caching of permissions that could become stale.
 - Fail-safe default: no permissions should mean deny by default
-- Defence in depth: use other mechanisms in addition to e.g. UNIX system permissions
+- Defense in depth: use other mechanisms in addition to e.g. UNIX system permissions
 - Open design: reference monitor source should be auditable
 - Psychological acceptability: Intuitive system
 - Economy of mechanisms: Keep the TCB (below) small
@@ -1057,16 +1064,20 @@ All processes are spawned by a parent (except `init`); on process creation:
 - EUID is inherited from parent's EUID, or set to file's owner if `setuid` bit is set (see below)
 - SUID is set to the same as EUID
 
+NOTE that the above is `exec*` syscalls; `fork` copies UIDs unconditionally.
+
 Changing UIDs:
-- Root: can change all 3 to anything
-- Unprivileged users: change EUID to _either_ RUID or SUID
-- `setuid(x)`: changes all 3 to x
-- `seteuid(x)`: changes EUID to x
+- Root:
+  - `setuid(x)`: changes all 3 to x
+  - `seteuid(x)`: changes EUID to x
+- Unprivileged users:
+  - `setuid(x)`: changes EUID to x only if x is RUID or SUID (or EUID)
+  - `seteuid(x)`: same as `setuid`
 
 === Elevating Privileges (`setuid` bit)
 
 Unprivileged users often need _elevation_ for specific operations (e.g. `passwd` modifies `/etc/shadow`, which only root can r/w). \
-The setuid permission bit (the 12th bit) on an executable file means when when the file is executed, the process's EUID (and SUID) is set to the file's owner rather than inheriting the parent's (default).
+The setuid permission bit (the 12th bit) on an executable file means when the file is executed, the process's EUID (and SUID) is set to the file's owner rather than inheriting the parent's (default).
 
 (The setgid bit is the 11th bit, and works similarly but for groups instead of users.)
 
@@ -1134,14 +1145,14 @@ Correctness requirements:
 Logistical challenges:
 - Information asymmetry (between different employees): e.g. security admins not knowing someone was fired
   - Insider attacks often result from the failure to revoke access of former employees
-- Efficient updates: people's roles change, and access needs to be kept up to date
+- Efficient updates: people's roles change, and access needs to be kept up-to-date
 
 == Modern Models
 
 Android has a unique and effective access control / security model:
 
 - per-application (per-user) permissions (e.g. GPS access in a mobile app): higher granularity
-- runs SELinux which enforces MAC over all processes
+- runs SELinux which enforces MAC over all processes (every process runs as unique user)
 - uses per-app sandboxing: apps cannot access outside its own data by default
 - runs the user as non-root by default (and in fact never grants the user root)
 
