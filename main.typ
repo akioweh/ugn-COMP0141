@@ -27,9 +27,9 @@
 }
 
 
-#title[yaaaar]
+#title[COMP0141]
 
-COMP0141 security
+Security
 
 This course is about "understanding information security: how attacks work, how they can be prevented, and the importance of 'thinking about the human'... and above all, how to think with a security mindset".
 
