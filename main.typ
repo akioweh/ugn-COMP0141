@@ -10,7 +10,7 @@
 #set math.vec(delim: "[")
 
 #let note-counter = counter("notes")
-#let note-ref(label) = context {
+#let note-ref(label) = context{
   link(label)[#super[#text(fill: rgb(255, 155, 200))[
     #note-counter.at(label).first()
   ]]]
@@ -525,7 +525,6 @@ Designing only for the _average_ user leaves massive vulnerabilities for margina
 
 
 = Availability & Malware
-
 == Importance of Availability
 
 (recall the definition of Availability from the CIA triad.)
@@ -627,24 +626,24 @@ memcached used to use UDP by default, making the spoofing trivial (does not requ
   Attacked Dyn DNS, knocking out Twitter, Reddit, and Netflix.
 
 
-== DoS Mitigation Strategies
+=== DoS Mitigation Strategies
 
-=== Architectural Defenses
+==== Architectural Defenses
 
 Proxies
 
 - Content-Delivery Networks (CDNs) & Scrubbing Proxies: (e.g. Cloudflare, Akamai) distribute load globally.
   Proxies sit in front of the web server, handle the handshakes, and only forward fully established TCP connections to absorb SYN floods.
   CDNs remove the vast majority of the load from the origin server to absorb even application-layer attacks.
-- SYN Cookies. 
-  When the server receives a SYN packet, instead of saving the connection details in memory, it takes the client's IP, port, and a secret "timestamp/nonce" and runs it through a hash function. 
-  The server then sends a SYN-ACK back with the hash as the Initial Sequence Number (ISN) field of the TCP header. 
-  If the client is legitimate, it will respond with an ACK packet. 
+- SYN Cookies.
+  When the server receives a SYN packet, instead of saving the connection details in memory, it takes the client's IP, port, and a secret "timestamp/nonce" and runs it through a hash function.
+  The server then sends a SYN-ACK back with the hash as the Initial Sequence Number (ISN) field of the TCP header.
+  If the client is legitimate, it will respond with an ACK packet.
   The client's "Acknowledgement Number" is always the server's Sequence Number + 1.
   The server subtracts 1 from the acknowledgement number, re-calculates the hash using the packet's info and compares.
   If they match, the connection is legitimate and only then will the server allocate memory for it.
 
-=== Rate Limiting & Filtering
+==== Rate Limiting & Filtering
 
 - Client Puzzles: a proof-of-work mechanism requiring clients to solve moderately hard computational problems (very similar to crypto mining).
   A drawback is of course that the computational power varies greatly from professional workstations to mobile devices...
@@ -652,7 +651,7 @@ Proxies
 - Ingress Filtering: ISPs drop outgoing packets if the source IP is not from within the network (indicating spoofing).
   Of course, as long as one ISP does not do this, then its users can more easily perform spoofing.
 
-=== Source Identification
+==== Source Identification
 
 Regarding source IP spoofing: discovering the true origin of spoofed packets to block them at the source.
 
@@ -694,7 +693,7 @@ Self-contained / Standalone
 - Rootkits
 - Spyware
 
-=== Viruses vs Worms
+=== Parasites
 
 #table(
   columns: (auto, 1fr, 1fr),
@@ -716,7 +715,8 @@ Self-contained / Standalone
 
   bottomrule(),
 )
-
+==== Viruses
+==== Trojan horses
 === Trojans, Spyware, and Rootkits
 
 / Trojan Horse: Malware disguised as legitimate, useful software.
@@ -1057,7 +1057,7 @@ Specifically, user accounts are identified by and represented as numeric IDs.
 There are three User IDs (UIDs) for a process:
 - Real UID (RUID): identifies who the process _belongs_ to
 - Effective UID (EUID): what the reference monitor uses for permissions
-- Saved UID (SUID): used to store a previous state of the EUID
+- Saved UID (SUID): used to store the value of the EUID before modification
 
 All processes are spawned by a parent (except `init`); on process creation:
 - RUID is inherited from parent's RUID
