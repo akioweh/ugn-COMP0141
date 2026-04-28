@@ -84,6 +84,22 @@ dl dd { display: inline; margin: 0; }
 dl dd > p:only-child { display: inline; margin: 0; }
 dl dd::after { content: ""; display: block; margin-bottom: 0.4em; }
 
+/* Aside: tangential, de-emphasized content. Mirrors the indent + muted
+   appearance of the `aside` function in PDF mode. Uses opacity (rather
+   than `color`) so the fade applies uniformly to text, links, and the
+   inline-SVG math glyphs (which carry their own hardcoded fill). This
+   also matches the PDF semantics, where `text(fill: muted)` is a 50%
+   blend toward the page background. */
+blockquote.aside {
+  margin: 0.6em 0;
+  padding-left: 2em;
+  border-left: none;
+  opacity: 0.707;
+  font-style: normal;
+}
+blockquote.aside > p:first-child { margin-top: 0; }
+blockquote.aside > p:last-child { margin-bottom: 0; }
+
 ul, ol { padding-left: 1.5em; }
 
 table {
