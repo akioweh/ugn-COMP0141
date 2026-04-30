@@ -124,7 +124,7 @@ Common problems and ways to improve:
 - Users avoid secure methods due to complexity: make security the path of least resistance
 
 
-
+#pagebreak()
 = Design Principles & Background
 
 == Design Principles
@@ -226,6 +226,7 @@ A structure that is a group under both addition and multiplication is a field...
 / Prime Order Finite Field: stuff isomorphic to $frac(ZZ, p ZZ, style: "horizontal")$ where $p$ is prime. This is a, well, field that, well, is finite.
 
 
+#pagebreak()
 = Confidentiality
 
 == Cryptography
@@ -287,7 +288,7 @@ The Diffie-Hellman (DH) key exchange protocol allows two people to create a shar
   Bob~~ computes $S = A^b mod p$. \
   Both results are identical due to, well, math.
 
-This is secure as the discrete logarithm problem makes it hard to 1) deduce $a$ or $b$ from $A$ and $B$ and 2) compute $S$ without knowledge of $a$ and $b$.
+This is secure as the discrete logarithm problem makes it hard to 1 deduce $a$ or $b$ from $A$ and $B$ and 2 compute $S$ without knowledge of $a$ and $b$.
 
 Note that DH does not _authenticate_ the parties and is thus vulnerable to man-in-the-middle (MitM) attacks.
 An attacker could sit in the middle, pretend to be Bob to Alice and Alice to Bob, establishing two separate secrets.
@@ -334,6 +335,7 @@ In practice, the agreement of an algorithm's security is purely social (based on
 Positive indicators vs negative indicators: negative good, positive bad; warn if security _isn't_ there.
 
 
+#pagebreak()
 = Integrity
 
 ...the state of being unaltered (by the unauthorized).
@@ -402,6 +404,7 @@ _X.509 certificates_ are used to prove the ownership of a public key.
 To communicate with a given domain, you need its public key. X.509 is important to ensure any public key you receive is actually associated with the claimed domain and did not come form an impersonator (Authenticity and MitM).
 
 
+#pagebreak()
 = Human-centered Security
 
 == Thinking Socio-Technically
@@ -504,6 +507,7 @@ Security should be designed universally.
 Designing only for the _average_ user leaves massive vulnerabilities for marginalized populations.
 
 
+#pagebreak()
 = Availability & Malware
 == Importance of Availability
 
@@ -713,6 +717,7 @@ Self-contained / Standalone
   There's also lower-level malware on the bootloader level.
 
 
+#pagebreak()
 = Authentication
 
 Authentication is the process of proving you are who you claim to be (before being granted access to non-public resources).
@@ -878,6 +883,8 @@ yada yada
 
 ...
 
+
+#pagebreak()
 = Access Control
 
 Authentication alone is insufficient -- not all users, even authenticated, should be granted access to _everything_. \
@@ -1137,6 +1144,7 @@ Android has a unique and effective access control / security model:
 - runs the user as non-root by default (and in fact never grants the user root)
 
 
+#pagebreak()
 = Security Examples
 
 
