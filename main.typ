@@ -257,12 +257,36 @@ Discrete log is also hard in composite multiplicative rings (in fact, at least a
 
 === Classic Ciphers
 
-/ Caesar shift cipher: linear shift letter-substitution. Key is a single element of $ZZ slash n$ (alphabet size $n$).
-/ Monoalphabetic substitution: arbitrary letter-substitution. Key is a permutation $sigma in S_n$.
-/ Vigenere Cipher: letter-substitution where we rotate through a sequence of independent Caesar ciphers. Key is a fixed-length sequence in $(ZZ slash n)^k$.
-/ Polyalphabetic Substitution: the parent class of the above (Vigenère and Enigma are both instances): substitution that varies by position.
-/ Running Key Cipher: Vigenere cipher, but the key comes from a practically infinite source like a book.
-/ One-time Pad: Requires a secret key at least as long as the plaintext. Each letter in plaintext is combined with the corresponding key letter via modular addition. Information-theoretically unbreakable if the key is truly random, secret, and used only once.
+Most classic ciphers are _substitution_ ciphers: each plaintext letter is replaced by another according to some rule.
+They split into _monoalphabetic_ (one fixed substitution) and _polyalphabetic_ (the substitution varies by position).
+
+==== Monoalphabetic Substitution
+
+A single permutation $sigma in S_n$ (over an alphabet of size $n$) is applied to every letter.
+Key space is $n!$ but trivially broken by frequency analysis on any non-trivial ciphertext.
+
+/ Caesar shift cipher: special case where $sigma$ is a cyclic shift.
+  Key is a single element of $ZZ slash n$; only $n$ possible keys (brute-forceable).
+
+==== Polyalphabetic Substitution
+
+The substitution varies by position; the parent class of Vigenère, running-key, and Enigma.
+Defeats simple frequency analysis on the ciphertext as a whole, but periodic schemes leak structure once the period is found (Kasiski examination, index of coincidence).
+
+/ Vigenere Cipher: rotates through a fixed-length sequence of $k$ independent Caesar shifts.
+  Key is in $(ZZ slash n)^k$.
+  Periodic, so vulnerable once $k$ is recovered.
+/ Running Key Cipher: Vigenère with the key drawn from a long, structured source (e.g. a book).
+  No fixed period, but the key is non-random.
+  Statistical attacks on plaintext-on-plaintext still apply.
+/ Enigma: rotor machine implementing a position-varying substitution with very long effective period; broken via known-plaintext (cribs) and operational mistakes, not a flaw in the substitution principle.
+
+==== Beyond Substitution
+
+/ One-time Pad: Each plaintext letter is combined with a corresponding key letter via modular addition.
+  Requires a secret key at least as long as the plaintext.
+  Information-theoretically unbreakable if the key is truly random, secret, and used only once.
+  (Vigenère with a truly random key as long as the message _is_ a one-time pad.)
 
 
 == Symmetric Encryption
