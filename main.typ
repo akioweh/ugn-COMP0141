@@ -159,13 +159,31 @@ Additional principles:
 
 / Prudent Paranoia: Don't underestimate the effort adversaries will go to. "Just because you're paranoid doesn't mean they aren't after you."
 
-/ Privacy Promotion: // TODO: definition
+/ Privacy Promotion: Treat user privacy as a first-class design goal, not a side-effect of confidentiality.
+  Collect the minimum data necessary, retain it for the minimum time, and prefer techniques (e.g. local processing, end-to-end encryption) that keep data out of operator hands.
 
 // Trusted Computing Base is defined and discussed in §"Access Control" below.
 
 == Networking
 
-// TODO: TCP/IP, DNS, packets, routing basics
+The TCP/IP stack (4 layers, bottom-up):
+/ Link: physical / local-segment frames (Ethernet, 802.11).
+  MAC addresses.
+/ Network: end-to-end packet routing (IP).
+  IP addresses; routers forward by longest-prefix match.
+/ Transport: connection abstractions.
+  TCP is reliable, ordered, handshake-based; UDP is best-effort and stateless.
+/ Application: everything else (HTTP, DNS, BGP, ...).
+
+/ DNS: maps human-readable domain names to IP addresses via a hierarchical, distributed lookup (root → TLD → authoritative).
+  Mostly UDP/53; cached aggressively.
+  Trust-based — classic DNS has no integrity (cf. DNSSEC, DoH).
+
+/ Packets: each layer wraps the layer above with its own header.
+  Hosts care about all four; intermediate routers normally inspect only up to Network.
+
+/ Routing: between networks (autonomous systems) by BGP, an Application-layer protocol over TCP.
+  Each router announces reachability for prefixes; specificity (longer prefix) wins.
 
 == Math
 
@@ -294,7 +312,11 @@ Defeats simple frequency analysis on the ciphertext as a whole, but periodic sch
 - stream ciphers: a key + nonce/IV generates a keystream that XORs with arbitrary-length plaintext.
 - block ciphers: a primitive that encrypts fixed-size blocks under one key. Encrypting longer messages requires a _mode of operation_ (CBC, CTR, GCM, ...); some modes pad, others (e.g. CTR) don't.
 
-// TODO: AES details (Rijndael, rounds, S-box, key sizes)
+/ AES: (Advanced Encryption Standard, formerly Rijndael) the de-facto symmetric block cipher.
+  128-bit blocks; 128 / 192 / 256-bit keys with 10 / 12 / 14 rounds respectively.
+  Each round (except the last) is SubBytes (non-linear S-box over $"GF"(2^8)$) → ShiftRows → MixColumns → AddRoundKey; round keys come from a key schedule.
+  Has dedicated CPU instructions (AES-NI) on modern hardware.
+  Security is unproven but well-scrutinized.
 
 === Key Exchange
 
@@ -745,7 +767,33 @@ Self-contained / Standalone
   bottomrule(),
 )
 
-// TODO: subsections on Viruses (in-depth) and Worms (in-depth)
+==== Viruses
+
+A virus injects its code into a host program.
+When the host runs, the virus runs first, then transfers control back so the host appears to behave normally.
+
+Lifecycle: _dormant_ → _propagation_ (infect more hosts) → _triggering_ (condition met, e.g. date) → _execution_ (payload).
+
+Concealment techniques to evade signature-based AV:
+/ Encrypted: payload encrypted under a per-instance key.
+  Only the small decryptor stub is constant (and thus signaturable).
+/ Polymorphic: the decryptor itself is regenerated each infection (different register choices, junk instructions).
+  No two copies share bytes.
+/ Metamorphic: no encryption at all; the entire body is rewritten each generation (instruction substitution, reordering).
+
+==== Worms
+
+A worm is standalone: it scans for vulnerable hosts over the network and propagates without user interaction.
+Spread is bounded by scanning strategy and bandwidth, not by users.
+
+Scanning strategies:
+- Random: pick IPs uniformly.
+  Simple, slow start, wastes packets on dark space.
+- Hit-list: pre-computed list of known-vulnerable hosts seeds the initial wave for explosive early growth (Slammer-style).
+- Topological: harvest addresses from the infected host (address book, peer lists).
+  High hit rate but limited reach.
+
+Spread famously follows a logistic curve; the early phase is exponential, capped by the size of the vulnerable population.
 
 === Trojans, Spyware, and Rootkits
 
@@ -931,11 +979,31 @@ User confidence massively declines as soon as one attack succeeds
 
 === Multi-Factor Authentication (MFA)
 
-// TODO: MFA details (combining factors; SMS-OTP weaknesses; FIDO2/WebAuthn; push fatigue)
+Combine ≥2 factors from different categories (know / have / are) so compromising one does not break authentication.
+Two factors of the _same_ category (e.g. password + security question) is not MFA.
+
+Common second factors, weakest to strongest:
+/ SMS-OTP: code sent by SMS.
+  Vulnerable to SIM swap, SS7 interception, and phishing (the code is just a shared secret in transit).
+/ TOTP authenticator app: time-based code on a device.
+  Phishable (attacker proxies the code in real-time) but not interceptable over the carrier.
+/ Push approval: app prompts "approve this login?".
+  Phishable via _MFA fatigue_ (spam approvals until the user taps yes by accident).
+/ FIDO2 / WebAuthn: hardware-backed public-key challenge-response.
+  The authenticator signs a challenge bound to the actual origin (anti-phishing) and never releases the private key.
 
 === Attacks
 
-// TODO: phishing, replay, credential stuffing, password spraying, SIM swap, MFA fatigue, etc.
+/ Phishing: trick the user into entering credentials at an attacker-controlled site.
+  Defeats most "what you know" and many "what you have" factors; FIDO2/WebAuthn defeats it by binding to origin.
+/ Replay: capture a valid auth message and resend it later.
+  Prevented by freshness (random challenges, timestamps, nonces).
+/ Credential Stuffing: replay (username, password) pairs leaked from one breach against unrelated services.
+  Effective because of password reuse.
+/ Password Spraying: try a few common passwords against many accounts (avoiding per-account lockouts that defeat brute force).
+/ SIM Swap: social-engineer the carrier into porting the victim's number, intercepting SMS-OTPs and recovery flows.
+/ MFA Fatigue: spam push approvals until the user taps "approve" out of annoyance or confusion.
+/ Adversary-in-the-Middle: real-time proxy that relays login forms (and OTP codes) between victim and the legitimate site, capturing the resulting session.
 
 
 #pagebreak()
