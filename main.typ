@@ -39,14 +39,14 @@ Other properties beyond CIA:
 / Authenticity: (note: integrity pertains to the data itself, while authenticity pertains to its source)
 / Anonymity: (note: privacy is about hiding the action, while anonymity is about hiding the author)
 / Non-repudiation: individuals being unable to deny any messages they've sent
-/ Plausible deniability: opposite of non-repudiation
-/ Forward secrecy: a compromising attack at one point in time does not compromise any earlier data
+/ Plausible deniability: ability to credibly deny actions (a stronger form of the negation of non-repudiation)
+/ Forward secrecy: compromise of long-term keys does not compromise past session keys (and so past traffic)
 
 == Security Definitions
 
 To _design_ a secure system, one first needs to _define_ the criteria for security. \
 Two philosophies:
-/ Binary: A system is either secure or insecure. Cryptography uses a binary security definition.
+/ Binary: A system is either secure or insecure. Cryptography uses a binary model.
 / Risk management: A system is secure to some acceptable level
 
 Binary definitions are hard to get right (and consequences can be tremendous).
@@ -65,12 +65,12 @@ A *system is secure* if an adversary, constrained by some given threat model, ca
 
 An adversary has access to a set of _resources_ to:
 - observe (sniff packets)
-- corrupt (jam radio comms)
+- disrupt (jam radio comms)
 - influence (social engineering)
-- modify
-- control
+- modify (alter packets in transit)
+- control (influence trusted users)
 
-A _strategic_ adversary optimally uses resources.
+A _strategic_ adversary uses resources _optimally_ (to maximize their objective subject to constraints).
 
 *STRIDE* is a model to analyze threats:
 
@@ -79,7 +79,7 @@ A _strategic_ adversary optimally uses resources.
 / Repudiation: claiming (whether honestly or not) a lack of responsibility (Non-repudiation)
 / Information disclosure: unauthorized access (Confidentiality)
 / Denial of service: exhausting / overwhelming a server's ability to provide service (Availability)
-/ Elevation of privilege: failure of Authorization control
+/ Elevation of privilege: gaining higher access privileges than authorized (Authentication and Access Control)
 
 === Vulnerabilities
 
@@ -137,9 +137,11 @@ The following 8 principles spell out ELLF COPS.
 
 / Least Privilege: When configuring access control, provide each user with the minimum access required for them to do their job.
 
-/ Least Common Mechanism: Minimization of shared design or shared data objects between secure components or a system's users.
+/ Least Common Mechanism: Minimize mechanisms (state, services, channels) shared across users or security domains.
+  Shared mechanisms are inherently trusted by all parties using them and are prone to leaking covert channels.
 
-/ Fail-safe Defaults: The "default" state (e.g. during unforeseen errors) should not violate security principles. E.g., using a white-list instead of a black-list for access control.
+/ Fail-safe Defaults: The "default" state (e.g. during unforeseen errors) should not violate security principles.
+  E.g., using a white-list instead of a black-list for access control.
 
 / Complete Mediation: Every access to every object should be checked for authority.
 
@@ -147,7 +149,7 @@ The following 8 principles spell out ELLF COPS.
 
 / Psychological Acceptability: A system's secure mechanism should be at least as easy as not using it. (path of least resistance)
 
-/ Separation of Privilege: Requiring more than one "key" for authorization (distributing keys).
+/ Separation of Privilege: No single condition (or single party) should suffice to grant access; require multiple independent checks.
 
 Additional principles:
 
@@ -157,13 +159,13 @@ Additional principles:
 
 / Prudent Paranoia: Don't underestimate the effort adversaries will go to. "Just because you're paranoid doesn't mean they aren't after you."
 
-/ Privacy Promotion:
+/ Privacy Promotion: // TODO: definition
 
-/ Trusted Computing Base:
+// Trusted Computing Base is defined and discussed in §"Access Control" below.
 
 == Networking
 
-Some basics regarding TCP/IP + DNS alongside packets and routing.
+// TODO: TCP/IP, DNS, packets, routing basics
 
 == Math
 
@@ -171,7 +173,7 @@ Some basics regarding TCP/IP + DNS alongside packets and routing.
 
 $x | y$ ~ means x is a factor of y (think: x "goes into" y).
 
-$z = a x + y quad <==> quad z equiv y thick (mod x)$ \
+$(exists a in ZZ : z = a x + y) quad <==> quad z equiv y thick (mod x)$ \
 $z equiv y thick (mod x) quad <==> quad x | (z - y)$
 
 $gcd(a, b) = max(d : d | a "and" d | b)$
@@ -207,8 +209,8 @@ def egcd(a, b):
 
 === Modular Arithmetic
 
-Associativity is preserved for $+$ and $times$. \
-Exponentiation rules are also preserved.
+All ring axioms (associativity, commutativity, distributivity) are preserved for $+$ and $times$. \
+Exponentiation works in the exponent _modulo $phi(n)$_, not modulo $n$: when $gcd(a, n) = 1$, $a^x equiv a^(x mod phi(n)) thick (mod n)$ (Euler's theorem).
 
 For further stuff regarding *commutative rings* and *modulo addition groups* or *modulo multiplication rings*, see https://akioweh.com/shared/COMP0147#modular-arithmetic.
 
@@ -221,9 +223,11 @@ The proof in the other direction is literally the same thing reversed.
 Multiplicative inverses are unique.
 Evidently, the extended Euclidean algorithm computes them efficiently.
 
-A structure that is a group under both addition and multiplication is a field...
+A _field_ is an abelian group under addition whose _nonzero_ elements form an abelian group under multiplication, with multiplication distributing over addition.
+(0 has no multiplicative inverse.)
 
-/ Prime Order Finite Field: stuff isomorphic to $frac(ZZ, p ZZ, style: "horizontal")$ where $p$ is prime. This is a, well, field that, well, is finite.
+/ Prime Order Finite Field: $frac(ZZ, p ZZ, style: "horizontal")$ where $p$ is prime.
+  (Note: there are also finite fields of prime-_power_ order $p^k$ for $k > 1$, but those are _not_ $frac(ZZ, p^k ZZ, style: "horizontal")$ — that latter ring is not even a field.)
 
 
 #pagebreak()
@@ -240,7 +244,7 @@ Important algebraic structures:
 - multiplicative rings modulo large $n = p q$ ~~ $frac(ZZ, p q ZZ, style: "horizontal")$ ~ ($p, q >= 2^1024$ and are primes).
 
 Finite fields' value in encryption comes from the discrete log problem; multiplicative rings' value come from the factoring problem. \
-The discrete log is also hard in composite multiplicative rings, just that finite fields are more computationally suited (efficient) for discrete log setups.
+Discrete log is also hard in composite multiplicative rings (in fact, at least as hard as factoring), but prime fields admit cleaner subgroup structure for DL-based protocols.
 
 
 / Discrete Logarithm: Given $b$, $y$, and prime $p$, find $x$ s.t. $b^x equiv y thick (mod p)$.
@@ -249,31 +253,32 @@ The discrete log is also hard in composite multiplicative rings, just that finit
 
 / RSA Problem: (Rivest, Shamir, Adleman) Given $N$, $e$, and $y$, find $b$ s.t. $b^e equiv y thick (mod N)$. ($N = p q$, different odd primes.) _Believed_ to be as hard as the factoring problem.
 
-/ One-Way Functions: A function that is easy to compute, but (believed to be) very difficult to invert or find two inputs with the same output. Discrete log and the factoring problem are functions.
+/ One-Way Functions: A function that is easy to compute, but (believed to be) very difficult to invert or find two inputs with the same output. Modular exponentiation (whose inverse is the discrete log _problem_) and integer multiplication of primes (whose inverse is the factoring _problem_) are candidate one-way functions.
 
 === Classic Ciphers
 
-/ Caesar shift cipher: linear shift letter-substitution. Key is a single base-$n$ value
-/ Monoalphabetic substitution: arbitrary letter-substitution. Key is a $n mapsto n$ table.
-/ Vigenere Cipher: letter-substitution where we rotate through a sequence of independent Caesar ciphers. Key length is variable (of base-$n$ values).
-/ Polyalphabetic Substitution: idk (e.g. enigma?)
+/ Caesar shift cipher: linear shift letter-substitution. Key is a single element of $ZZ slash n$ (alphabet size $n$).
+/ Monoalphabetic substitution: arbitrary letter-substitution. Key is a permutation $sigma in S_n$.
+/ Vigenere Cipher: letter-substitution where we rotate through a sequence of independent Caesar ciphers. Key is a fixed-length sequence in $(ZZ slash n)^k$.
+/ Polyalphabetic Substitution: the parent class of the above (Vigenère and Enigma are both instances): substitution that varies by position.
 / Running Key Cipher: Vigenere cipher, but the key comes from a practically infinite source like a book.
-/ One-time Pad: Requires key at least as long as plaintext. Each letter in plaintext is combined with the corresponding key letter via modular addition. Unbreakable if key is truly random and used only once.
+/ One-time Pad: Requires a secret key at least as long as the plaintext. Each letter in plaintext is combined with the corresponding key letter via modular addition. Information-theoretically unbreakable if the key is truly random, secret, and used only once.
 
 
 == Symmetric Encryption
 
-- stream ciphers: given some initialization vector, it can encrypt arbitrary length streams
-- block ciphers: encrypts in fixed-sized units (pad as necessary) using one short key.
+- stream ciphers: a key + nonce/IV generates a keystream that XORs with arbitrary-length plaintext.
+- block ciphers: a primitive that encrypts fixed-size blocks under one key. Encrypting longer messages requires a _mode of operation_ (CBC, CTR, GCM, ...); some modes pad, others (e.g. CTR) don't.
 
-AES...
+// TODO: AES details (Rijndael, rounds, S-box, key sizes)
 
 === Key Exchange
 
 The Diffie-Hellman (DH) key exchange protocol allows two people to create a shared secret key over an insecure communication channel without ever sending the key itself.
 
 + *Public parameters* \
-  Alice and Bob agree on prime $p$ and base generator $g$.
+  Alice and Bob agree on prime $p$ and a generator $g$ of a large prime-order subgroup of $(ZZ slash p)^*$.
+  (Using a full-group generator leaks one bit of each secret via the Legendre symbol.)
 
 + *Private Keys* \
   Alice picks secret $a$. \
@@ -288,7 +293,8 @@ The Diffie-Hellman (DH) key exchange protocol allows two people to create a shar
   Bob~~ computes $S = A^b mod p$. \
   Both results are identical due to, well, math.
 
-This is secure as the discrete logarithm problem makes it hard to 1 deduce $a$ or $b$ from $A$ and $B$ and 2 compute $S$ without knowledge of $a$ and $b$.
+This is secure as 1 the discrete logarithm problem makes it hard to deduce $a$ or $b$ from $A$ and $B$, and 2 the _Computational Diffie-Hellman_ (CDH) assumption makes it hard to compute $S$ from $A$ and $B$ alone.
+(CDH is implied by DL but not proven equivalent.)
 
 Note that DH does not _authenticate_ the parties and is thus vulnerable to man-in-the-middle (MitM) attacks.
 An attacker could sit in the middle, pretend to be Bob to Alice and Alice to Bob, establishing two separate secrets.
@@ -318,21 +324,26 @@ A problem of symmetric encryption arises in many-to-many communication setups: t
 - choose 2 large primes $p$ and $q$
 - let $N = p q$
 - choose Public Key $e$ s.t. $gcd(e, phi(N)) = 1$ ($phi(N) = (p - 1)(q - 1)$)
-- compute Private Key $d$ s.t. $e times d equiv 1 thick (mod phi(N))$ (the inverse of $e$)
+- compute Private Key $d$ s.t. $e times d equiv 1 thick (mod phi(N))$ (the inverse of $e$).
+  (Modern implementations use Carmichael's $lambda(N) = op("lcm")(p-1, q-1)$ instead of $phi(N)$, yielding a smaller $d$; both work.)
 
 $(N, e)$ is the public key; $(N, d)$ is the private key.
 
 $op("Enc")(M) = M^e mod N$ \
 $op("Dec")(C) = C^d mod N$
 
+NOTE: "textbook" RSA encryption (above) is _not_ IND-CPA secure: it's deterministic (same $M$ ⇒ same $C$) and malleable.
+Real schemes randomize via padding (OAEP).
+
 
 === random details
 
 One-way functions' existence depend on P $!=$ NP, which is _unproved_.
+(P $!=$ NP is necessary but not sufficient: OWFs need average-case hardness, not just worst-case.) \
 Even many symmetric ciphers that do not depend on one-way functions, like AES, are also _unproved_ regarding their security.
 In practice, the agreement of an algorithm's security is purely social (based on the lack of vulnerabilities found after "significant" scrutiny)
 
-Positive indicators vs negative indicators: negative good, positive bad; warn if security _isn't_ there.
+Positive indicators (e.g. padlock icon when secure) are easily ignored or spoofed; _negative_ indicators (warn when security is _absent_) are preferred — users react to alerts, not the absence of them.
 
 
 #pagebreak()
@@ -340,15 +351,14 @@ Positive indicators vs negative indicators: negative good, positive bad; warn if
 
 ...the state of being unaltered (by the unauthorized).
 
-Diffie-Hellman key exchange is vulnerable to Man-in-the-Middle attacks.
-Digital signatures can be used to prove authenticity (and integrity) and prevent MitM attacks.
+Digital signatures provide authenticity (and integrity), addressing the MitM vulnerability identified earlier in DH key exchange.
 
 / Authenticated Encryption: encryption + signature / message authentication checks to achieve both confidentiality and integrity (+ authenticity).
 
 == Digital Signatures
 
-The setup is similar to asymmetric encryption, but with the "private" and "public" keys swapped.
-In general, one uses the private key to compute the _signature_ of a message by treating the message as a ciphertext and "decrypting" it, and then anyone can use the public key to re-"encrypt" the signature and check that it matches the original message.
+For RSA specifically, the setup mirrors asymmetric encryption with the "private" and "public" keys swapped: one uses the private key to compute the _signature_ of a message by treating the message as a ciphertext and "decrypting" it, and then anyone can use the public key to re-"encrypt" the signature and check that it matches the original message.
+(This key-swap intuition is RSA-specific; ECDSA, EdDSA, and hash-based signatures don't follow this pattern.)
 
 For RSA, follow the same keygen procedure, then \
 $(N, e)$ is (still) the public key; $(N, d)$ is the signing (private) key.
@@ -356,7 +366,7 @@ $(N, e)$ is (still) the public key; $(N, d)$ is the signing (private) key.
 $op("Signature")(M) = M^d mod N$ \
 $op("Verify")(M, sigma): "check that" sigma^e equiv M thick mod N$
 
-/ Existential Unforgeability under Chosen Message Attack: (EUF-CMA security) Where a system is immune to CMA; one will not be able to forge a signature for any message, even after seeing signatures for messages of their choice.
+/ Existential Unforgeability under Chosen Message Attack: (EUF-CMA security) An adversary cannot produce a valid signature for _any_ new message, even after adaptively obtaining signatures on messages of their choice from a signing oracle.
 
 NOTE: "textbook" RSA (what we have here) signatures are _not_ EUF-CMA.
 Forgery without oracle: pick $sigma$, set $M = sigma^e mod N$ and the $(M, sigma)$ pair is valid (although no control over $M$'s content).
@@ -365,11 +375,13 @@ Real schemes sign $"pad"("hash"(M))$, not raw $M$.
 
 == Message Authentication Codes
 
-Like signatures, but uses symmetric ciphers.
+Like signatures, but uses shared-key primitives (e.g. HMAC, CMAC).
+Verification requires the same key, so MACs prove integrity + authenticity to anyone holding the key but cannot establish non-repudiation.
 
 == Hash Functions
 
-/ Cryptographic Hash Function: A uniform hash function exhibiting the avalanche effect with additional properties of pre-image resistance, second pre-image resistance, and collision resistance.
+/ Cryptographic Hash Function: A hash function with pre-image resistance, second pre-image resistance, and collision resistance.
+  Uniformity and the avalanche effect are typically also required to achieve the resistances.
 
 / Avalanche Effect: ...where even small changes in input yield large changes in output.
 
@@ -392,16 +404,18 @@ Applications of hash functions:
 
 $op("HMAC")(K, M) = H lr(((K xor "opad") || H lr(((K xor "ipad") || M), size: #125%)), size: #125%)$
 
-== other
+== Mapping to STRIDE
 
-Hash functions or signatures could prevent Spoofing, Tampering, Repudiation, and Elevation of privilege (in STRIDE). \
+Keyed hashes (MACs) or signatures could prevent Spoofing, Tampering, Repudiation, and Elevation of privilege (in STRIDE).
+(Unkeyed hashes alone don't authenticate; an attacker can recompute them.) \
 Encryption (in addition to powering signatures) could prevent Information disclosure and Elevation of privilege (in STRIDE).
 
 
 == Digital Certificates
 
 _X.509 certificates_ are used to prove the ownership of a public key.
-To communicate with a given domain, you need its public key. X.509 is important to ensure any public key you receive is actually associated with the claimed domain and did not come form an impersonator (Authenticity and MitM).
+To communicate with a given domain, you need its public key.
+X.509 is important to ensure any public key you receive is actually associated with the claimed domain and did not come from an impersonator (Authenticity and MitM).
 
 
 #pagebreak()
@@ -453,7 +467,8 @@ A system that lacks usability is fundamentally insecure as users will misuse or 
 
 NOTE that the slides incorrectly attributes these to the Nielsen Norman Group...
 
-/ Affordances & Signifiers: Systems should use familiar design patterns (e.g. a door with a pull handle naturally affords pulling)
+/ Affordances & Signifiers: An _affordance_ is a relationship between an object and the actions it permits (a door affords pulling); a _signifier_ is the perceptible cue that communicates the affordance (the pull handle).
+  Systems should make secure actions both afforded and signified.
 
 Case studies:
 - Access-controlled doors: a standard swing door with a badge reader is technically secure, but socially insecure (coworkers will politely hold the door open for each other, violating policy).
@@ -467,21 +482,26 @@ Case studies:
 == Human Limitations & Cognitive Biases
 
 Memory limitation:
-- short-term memory: up to 7 chunks of information at a time
-- long-term memory: relies on habits and require periodic refreshers
+- short-term / working memory: ~4 chunks at a time (Cowan, 2001; Miller's classic "7 ± 2" is now considered an over-estimate)
+- long-term memory: relies on habits and requires periodic refreshers
 
 Cognitive Biases:
 
 / Optimism Bias: "This won't ever happen to _me_."
-/ Anchoring Bias: "I did it before, so I'll do it again." Users anchor to their first decisions
-/ Consensus Bias: "Nobody else sets a complex password, so why should I?"
+/ Anchoring Bias: The first piece of information disproportionately shapes subsequent estimates.
+  E.g., the first quoted "risk level" frames how seriously a user takes everything that follows.
+/ Status Quo Bias: "I did it before, so I'll do it again."
+  Users stick with prior choices and habits.
+/ Consensus Bias: "Everyone probably reuses passwords like I do, so it's fine."
+  (false-consensus: assuming others share your behaviors)
 / Hyperbolic Time Discounting: "I'll worry about security tomorrow; I have to finish my work today."
 
 Attention and Inattentional Blindness:
 
 - Users experience "security fatigue".
   Frequent warnings or false positives cause users to become desensitized and ignore them.
-/ Inattentional Blindness: One only perceive what their focus on. ("Gorillas in our midst" experiment.) Users often do not notice security red-flags because they never focused on security to begin with (but rather the work they are doing).
+/ Inattentional Blindness: One only perceives what one focuses on. ("Gorillas in our midst" experiment.)
+  Users often do not notice security red-flags because they never focused on security to begin with (but rather the work they are doing).
 
 == Security Awareness & Behavior Change
 
@@ -532,10 +552,11 @@ Core redesigns are necessary, but impossible to deploy globally.
 
 / Denial of Service Attack: Preventing _authorized_ access to a system or resource, usually by exhaustion achieved via techniques like _amplification_.
 
-/ Resource Exhaustion: (aka. Flooding) A mechanism to execute DoS: intentionally consuming a finite resource until none is left for legitimate users. \
+/ Resource Exhaustion: A mechanism to execute DoS: intentionally consuming a finite resource until none is left for legitimate users.
+  _Flooding_ is the volumetric subcase; algorithmic-complexity attacks exhaust without flooding. \
   *Volumetric*: saturating (network) link bandwidth (e.g. UDP floods). \
-  *Protocol*: saturating limits in software limits (e.g. TCP connection tables, using SYN floods). \
-  *Application*: exhausting physical compute resources (e.g. RAM, database connections).
+  *Protocol*: saturating protocol-state limits in software (e.g. TCP connection tables, using SYN floods). \
+  *Application*: exhausting compute resources (e.g. RAM, CPU, database connections).
 
 As the Application layer is usually more shielded from the outside world, application layer attacks are often enabled by internal vulnerabilities (e.g. a memory leak in service software).
 
@@ -620,8 +641,8 @@ Proxies
   Proxies sit in front of the web server, handle the handshakes, and only forward fully established TCP connections to absorb SYN floods.
   CDNs remove the vast majority of the load from the origin server to absorb even application-layer attacks.
 - SYN Cookies.
-  When the server receives a SYN packet, instead of saving the connection details in memory, it takes the client's IP, port, and a secret "timestamp/nonce" and runs it through a hash function.
-  The server then sends a SYN-ACK back with the hash as the Initial Sequence Number (ISN) field of the TCP header.
+  When the server receives a SYN packet, instead of saving the connection details in memory, it encodes them into a 32-bit Initial Sequence Number (ISN): a coarse timestamp counter, a small MSS index, and a MAC of the client's IP/port + a server secret.
+  The server sends a SYN-ACK back with this ISN as the TCP header's Sequence Number.
   If the client is legitimate, it will respond with an ACK packet.
   The client's "Acknowledgement Number" is always the server's Sequence Number + 1.
   The server subtracts 1 from the acknowledgement number, re-calculates the hash using the packet's info and compares.
@@ -699,8 +720,9 @@ Self-contained / Standalone
 
   bottomrule(),
 )
-==== Viruses
-==== Trojan horses
+
+// TODO: subsections on Viruses (in-depth) and Worms (in-depth)
+
 === Trojans, Spyware, and Rootkits
 
 / Trojan Horse: Malware disguised as legitimate, useful software.
@@ -713,7 +735,7 @@ Self-contained / Standalone
 
 / Rootkits: Advanced malware designed to remain completely invisible and maintain privileged access. \
   *User-space Rootkits*: replaces standard utilities (e.g. `ls`, `ps`, `syslogd`) \
-  *Kernel-space Rootkits*: you're cooked. (Modified privileged kernel memory directly)... \
+  *Kernel-space Rootkits*: modify privileged kernel memory directly; near-impossible to detect or remove from within the running OS. \
   There's also lower-level malware on the bootloader level.
 
 
@@ -749,12 +771,13 @@ Hashed
 - store (username, $H(#"password")$)
 - on login: compute $H(#"entered password")$ and compare to stored hash
 - assuming one-way hash function, data breach does not immediately reveal actual passwords
-- problem: same password = same hash, enabling pre-computed-hash (called _rainbow tables_) attacks to recover passwords after data breach
+- problem: same password = same hash, enabling precomputed lookup tables (and the more space-efficient _rainbow tables_, which trade time for space via hash chains and reduction functions) to recover passwords after a breach
 
 Salted hash
 - store (username, $H(#"password" || #"salt")$, salt)
 - salt is a random value
 - now even same passwords produce different hashes, rendering rainbow tables useless (new table needed per-hash; increasing hash size makes this infeasible)
+- modern best practice: use a _slow_ password-hashing KDF (Argon2, bcrypt, scrypt) so brute-force becomes prohibitively expensive even per-user
 
 === Hashed Password Attacks
 
@@ -781,11 +804,11 @@ Alice and Bob have a previously-established, persistent pair of symmetric keys.
 
 Challenge procedure:
 - Alice wants to authenticate with Bob
-- Bob provides Alice challenge, a random string
-- Alice encrypts with shared secret key, sends back
-- Bob decrypts to verify
+- Bob provides Alice a challenge, a random string
+- Alice computes a MAC (or encryption) of the challenge under the shared key, sends back
+- Bob recomputes/decrypts to verify
 
-Challenge string is random to prevent replay attacks. \
+The challenge is random to prevent replay attacks. \
 This can also be extended to happen both way for bidirectional auth.
 
 === One-Time Passwords (OTP)
@@ -795,7 +818,7 @@ This can also be extended to happen both way for bidirectional auth.
 *Hash-chain OTP (Lamport scheme)*:
 
 Setup (server-side):
-+ user generate random secret $w$
++ user generates random secret $w$
 + user computes $H^t (w)$ (hashes $t$ times) and sends to server
 + server stores value and stores counter $j = 0$
 
@@ -808,11 +831,12 @@ Pros:
 - server does not store any secret; can be compromised and will be ok
 Cons:
 - you get exactly $t$ logins; need re-setup afterwards.
+  (The $t$-th login reveals $w$ itself, so re-setup must precede running out.)
 
 *Time-based OTP*:
 
-shared secret + current universal time (blocked into every few seconds) = temporally temporary codes. \
-Requires clock synchronization and is not strictly "on-time" use by definition.
+shared secret + current universal time (bucketed into a few-second window) = temporally temporary codes. \
+Requires clock synchronization. Not strictly _one-time_: the same code is reusable within its time window.
 
 === What You Are -- Biometrics
 
@@ -853,7 +877,13 @@ Problem: threshold for fuzzy? Too loose = insecure; too tight = many false locko
   [need to check for "liveness" to prevent amputation attacks; "gummy-bear" attacks possible],
 
   [Hand Scanner], [good], [good], [ok], [good], [hard to train the model],
-  [Retina Scanner], [ok], [good], [good], [ok], [contact lenses can cause issues],
+  [Iris Scanner], [ok], [good], [good], [ok], [patterned/coloured contact lenses can cause issues],
+  [Retina Scanner],
+  [poor],
+  [good],
+  [excellent],
+  [excellent],
+  [invasive (NIR through pupil); rarely deployed outside high-security],
 
   bottomrule(),
 )
@@ -877,11 +907,11 @@ User confidence massively declines as soon as one attack succeeds
 
 === Multi-Factor Authentication (MFA)
 
-yada yada
+// TODO: MFA details (combining factors; SMS-OTP weaknesses; FIDO2/WebAuthn; push fatigue)
 
 === Attacks
 
-...
+// TODO: phishing, replay, credential stuffing, password spraying, SIM swap, MFA fatigue, etc.
 
 
 #pagebreak()
@@ -918,6 +948,8 @@ An access right can be characterized by two dimensions: _alteration_ and _observ
 
   bottomrule(),
 )
+
+(This is an abstract model: "execute" assumes the runtime doesn't leak file contents to the subject, even though concrete OSes typically read the binary into the subject's memory.)
 
 / Reference Monitor: The component of a system that enforces access control decisions. (e.g. operating system, hotel staff)
 
@@ -957,7 +989,8 @@ Each object stores a list of subjects who have rights (and the specific rights i
 
 An implemented access control model with major industrial use.
 
-UNIX uses an ACL-like approach, but instead of every user being independent, each file only stores permissions for three generalized subjects:
+Traditional UNIX permissions are an ACL-_like_ approach (not true ACLs — POSIX extended ACLs are a separate, later addition).
+Each file only stores permissions for three generalized subjects:
 - owner
 - group
 - world
@@ -967,7 +1000,8 @@ The _group_ refers to a predefined collection of subjects. \
 The _world_ is any other subject that is neither the owner nor belongs to the group.
 
 It is important to note that the "owner" just refers to some arbitrary user.
-UNIX does not have _ownership_ semantics; that is, being the _owner_ does not semantically grant any additional permissions.
+UNIX does not have _ownership_ semantics; that is, being the _owner_ does not semantically grant any additional permissions. \
+(Owners do retain administrative privileges outside the rwx bits, e.g. `chmod` and `chown` to themselves, since these go through dedicated syscalls rather than the access matrix.)
 
 The set of access rights (for any of these indirect subjects) are
 - read (`r`)
@@ -1005,7 +1039,7 @@ For *directories*, "read", "write", and "execute" are not semantically intuitive
 - critical in multi-user systems, protecting users from themselves (messing up system) and each other
 
 *`sudo`*:
-- temporarily grants a user root privileges
+- temporarily grants a user the privileges of another user (root by default)
 - principle: don't run as root all the time; elevate only when needed
 
 
@@ -1035,7 +1069,7 @@ For access control, the TCB includes:
 The system complementary to the UNIX Permissions model.
 
 / Process Isolation:
-  - Processes cannot access each other's memory
+  - Processes cannot access each other's memory (by default)
   - Each process runs with the permissions of its associated _User_
   - A process can access any file its user has access to
 
@@ -1044,12 +1078,12 @@ Specifically, user accounts are identified by and represented as numeric IDs.
 There are three User IDs (UIDs) for a process:
 - Real UID (RUID): identifies who the process _belongs_ to
 - Effective UID (EUID): what the reference monitor uses for permissions
-- Saved UID (SUID): used to store the value of the EUID before modification
+- Saved UID (SSUID): used to store the value of the EUID before modification
 
 All processes are spawned by a parent (except `init`); on process creation:
 - RUID is inherited from parent's RUID
 - EUID is inherited from parent's EUID, or set to file's owner if `setuid` bit is set (see below)
-- SUID is set to the same as EUID
+- SSUID is set to the same as EUID
 
 NOTE that the above is `exec*` syscalls; `fork` copies UIDs unconditionally.
 
@@ -1058,13 +1092,13 @@ Changing UIDs:
   - `setuid(x)`: changes all 3 to x
   - `seteuid(x)`: changes EUID to x
 - Unprivileged users:
-  - `setuid(x)`: changes EUID to x only if x is RUID or SUID (or EUID)
+  - `setuid(x)`: changes EUID to x only if x is RUID or SSUID (or EUID)
   - `seteuid(x)`: same as `setuid`
 
 === Elevating Privileges (`setuid` bit)
 
 Unprivileged users often need _elevation_ for specific operations (e.g. `passwd` modifies `/etc/shadow`, which only root can r/w). \
-The setuid permission bit (the 12th bit) on an executable file means when the file is executed, the process's EUID (and SUID) is set to the file's owner rather than inheriting the parent's (default).
+The setuid permission bit (the 12th bit) on an executable file means when the file is executed, the process's EUID (and SSUID) is set to the file's owner rather than inheriting the parent's (default).
 
 (The setgid bit is the 11th bit, and works similarly but for groups instead of users.)
 
@@ -1074,7 +1108,7 @@ Pros of UNIX model:
 
 Cons:
 - ACLs are coarse-grained (only 3 subjects)
-- cannot differentiate between processes ran by the same user; you cannot have different processes have different permissions without running them as different users
+- cannot differentiate between processes run by the same user; you cannot have different processes have different permissions without running them as different users
 - nearly all system operations require root, creating a large attack surface
 
 == Access Control Policy Types
@@ -1117,7 +1151,7 @@ $X$ can read rights on $O$ for $S$ only if $(X, O, #quote[owner])$ OR $(X, S, #q
 
 Note that the "subject" (item \#2) of a table entry can be _either_ a subject or an object.
 
-*Grant vs. Transfer*: only #emph[owner]s can grant rights, whereas anyone can transfer a right that is, well, marked _transferable_ ($R^*$).
+*Grant vs. Transfer*: only #emph[owner]s can grant rights, whereas any holder of a _transferable_ right ($R^*$) can transfer it.
 Note that $X$ retains $R^*$ even after "transferring" it.
 
 == Access Control in Organizations
@@ -1147,4 +1181,5 @@ Android has a unique and effective access control / security model:
 #pagebreak()
 = Security Examples
 
+// TODO: case studies / worked examples
 
